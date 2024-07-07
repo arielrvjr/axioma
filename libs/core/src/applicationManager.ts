@@ -30,21 +30,19 @@ export const useApplicationManager = (initialConfig: ApplicationConfigType) => {
   );
 
   useEffect(() => {
-    // Inicializar plugins y módulos aquí si es necesario
     initializePlugins(initialConfig.plugins);
     initializeModules(initialConfig.modules);
-    // Ir al módulo principal
+    //going to mainModule
     const mainModule = getModule(initialConfig.mainModule);
     if (mainModule) {
-      // Navegar a la pantalla de entrada del módulo principal
       setState('currentScreen', mainModule.entryScreen);
     }
   }, [
     initialConfig,
-    getModule,
     setState,
     initializePlugins,
     initializeModules,
+    getModule,
   ]);
 
   const screens = getScreens();

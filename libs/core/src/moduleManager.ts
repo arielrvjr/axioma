@@ -1,38 +1,44 @@
 import { create } from 'zustand';
 import { useScreenManager } from './screenManager';
+import { useStoreManager } from './storeManager';
 
 export type Module = {
   name: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   routes: { [key: string]: React.ComponentType<any> };
   pluginsRequired: string[];
   dependencies: string[];
   entryScreen: string;
-  functionalities: { [key: string]: (...args: any[]) => any };
+  store: ReturnType<typeof create>;
 };
 
-type ModuleStore = {
-  modules: { [key: string]: Module };
+type ModuleManagerState = {
+  modules: Record<string, Module>;
   registerModule: (module: Module) => void;
-  getModule: (name: string) => Module | undefined;
+  getModule: (moduleName: string) => Module;
 };
 
-export const useModuleManager = create<ModuleStore>((set, get) => ({
-  modules: {},
-  registerModule: (module: Module) => {
-    set((state) => ({
-      modules: { ...state.modules, [module.name]: module },
-    }));
-
-    const { registerScreens } = useScreenManager.getState();
-    if (module.routes) {
-      const screens = Object.keys(module.routes).map((route) => ({
-        name: route,
-        component: module.routes[route],
+export const useModuleManager = create<ModuleManagerState>((set, get) => {
+  const modules: Record<string, Module> = {};
+  const storeManager = useStoreManager();
+  return {
+    modules,
+    registerModule: (module: Module) => {
+      set((state) => ({
+        modules: { ...state.modules, [module.name]: module },
       }));
-      registerScreens(screens);
-    }
-  },
-  getModule: (name: string) => {
-    return get().modules[name];
-  },
-}));
+
+      storeManager.addStore(module.store);
+
+      const { registerScreens } = useScreenManager.getState();
+      if (module.routes) {
+        const screens = Object.keys(module.routes).map((route) => ({
+          name: route,
+          component: module.routes[route],
+        }));
+        registerScreens(screens);
+      }
+    },
+    getModule: (moduleName: string) => get().modules[moduleName],
+  };
+});

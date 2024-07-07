@@ -33,12 +33,51 @@
       "options": {
         "targetName": "test"
       }
+    },
+    {
+      "plugin": "@nx/react-native/plugin",
+      "options": {
+        "startTargetName": "start",
+        "upgradeTargetname": "update",
+        "bundleTargetName": "bundle",
+        "podInstallTargetName": "pod-install",
+        "runIosTargetName": "run-ios",
+        "runAndroidTargetName": "run-android",
+        "buildIosTargetName": "build-ios",
+        "buildAndroidTargetName": "build-android",
+        "syncDepsTargetName": "sync-deps"
+      }
+    },
+    {
+      "plugin": "@nx/webpack/plugin",
+      "options": {
+        "buildTargetName": "build",
+        "serveTargetName": "serve",
+        "previewTargetName": "preview"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
+      }
     }
   ],
   "generators": {
     "@nx/react": {
       "library": {
+        "style": "none",
+        "linter": "eslint",
         "unitTestRunner": "jest"
+      },
+      "application": {
+        "babel": true,
+        "style": "none",
+        "linter": "eslint",
+        "bundler": "webpack"
+      },
+      "component": {
+        "style": "none"
       }
     }
   }
